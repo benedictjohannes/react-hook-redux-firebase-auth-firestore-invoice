@@ -1,0 +1,6 @@
+{
+    "html-css-class-completion.remoteStyleSheets": [
+        "https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    ],
+    "html-css-class-completion.enableScssFindUsage": true
+}

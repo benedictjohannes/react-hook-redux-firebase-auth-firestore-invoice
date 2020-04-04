@@ -64,10 +64,10 @@ const NavMenu = () => {
         </Nav.Link>
     );
     return (
-        <Navbar bg='light' expand='md' sticky='top' bg='dark' variant='dark'>
+        <Navbar expand='md' sticky='top' bg='dark' variant='dark'>
             <Container fluid='lg'>
                 <Navbar.Brand as={Link} to='/' className='p-0'>
-                    Your Logo
+                  Your Logo
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls='basic-navbar-nav' />
                 <Navbar.Collapse id='basic-navbar-nav'>

@@ -67,7 +67,7 @@ const NavMenu = () => {
         <Navbar expand='md' sticky='top' bg='dark' variant='dark'>
             <Container fluid='lg'>
                 <Navbar.Brand as={Link} to='/' className='p-0'>
-                  Your Logo
+                  <img src='/enceleratelogo.svg' alt='' className='p-0' style={{height: 40}} />
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls='basic-navbar-nav' />
                 <Navbar.Collapse id='basic-navbar-nav'>

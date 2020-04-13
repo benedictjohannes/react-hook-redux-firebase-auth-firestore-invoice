@@ -3,6 +3,7 @@ import React, {createContext, useContext} from 'react'
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/firestore';
+import 'firebase/storage';
 
 const firebaseConfig = {
     apiKey: process.env.REACT_APP_API_KEY,
@@ -22,6 +23,8 @@ class Firebase {
         /* Firebase APIs */
         this.auth = app.auth();
         this.db = app.firestore();
+        this.firestore = app.firestore;
+        this.storage = app.storage().ref()
         
         /* Auth Providers */
         this.emailAuthProvider = app.auth.EmailAuthProvider;
@@ -56,25 +59,18 @@ class Firebase {
     passwordUpdate = password =>
         this.auth.currentUser.updatePassword(password);
 
-    /* User Database */
+    /* Databases */
     users = () => this.db.collection('users');
     user = uid => this.db.collection('users').doc(uid)
+    invoices = () => this.db.collection('invoices');
+    invoice = iid => this.db.collection('invoices').doc(iid);
+    organizations = () => this.db.collection('organizations');
+    organization = oid => this.db.collection('organizations').doc(oid);
 
     /* Auth state listener */
     authStateListener = (authorize,unauthorize) => {
         this.auth.onAuthStateChanged(async authUser => {
-            if (authUser) {
-                let dataCall = await this.user(authUser.uid).get()
-                let data = dataCall.data()
-                if (!Object.keys(data).length) {
-                    let toSet = {email: authUser.email, role: ['user']}
-                    console.log('calling set the data')
-                    this.user(authUser.uid).set(toSet).then(authorize({...authUser, data: toSet}))
-                } else {
-                    console.log('callingTheData')
-                    return authorize({...authUser, data})
-                }
-            }
+            if (authUser) return authorize(authUser)
             return unauthorize()
         })
     }

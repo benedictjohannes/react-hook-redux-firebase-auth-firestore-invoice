@@ -1,12 +1,88 @@
+$grid-gutter-width: 24px;
 
+@import '../node_modules/bootstrap/scss/functions';
+@import '../node_modules/bootstrap/scss/variables';
+@import '../node_modules/bootstrap/scss/mixins';
 
-
-@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import '../node_modules/bootstrap/scss/reboot';
+@import '../node_modules/bootstrap/scss/type';
+@import '../node_modules/bootstrap/scss/grid';
+@import '../node_modules/bootstrap/scss/tables';
+@import '../node_modules/bootstrap/scss/forms';
+@import '../node_modules/bootstrap/scss/buttons';
+@import '../node_modules/bootstrap/scss/input-group';
+@import '../node_modules/bootstrap/scss/nav';
+@import '../node_modules/bootstrap/scss/navbar';
+@import '../node_modules/bootstrap/scss/utilities';
+@import '../node_modules/bootstrap/scss/print';
+@import '../node_modules/bootstrap/scss/transitions';
 
 .signInOutForm {
-  width: 100%;
-  max-width: 350px;
-  background-color: $light;
-  padding: 18px;
-  border-radius: 8px;
+    width: 100%;
+    max-width: 350px;
+    background-color: $light;
+    padding: 18px;
+    border-radius: 8px;
+}
+#root {
+    position: relative;
+}
+.mask {
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: 1019;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-shadow: lighten($color: #000000, $amount: 10);
+}
+.dz {
+    height: 80px;
+    border: 2px groove $primary;
+}
+img.previewLogoH {
+    max-width: calc(100% - 3rem);
+    max-height: 100px;
+    object-fit: contain;
+    object-position: center;
+}
+div.previewLogoSq {
+    width: 100px;
+    height: 100px;
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: center;
+    }
+}
+#invoiceRoot {
+    table,
+    td,
+    tr,
+    th,
+    tbody,
+    thead {
+        background-color: transparent !important;
+    }
+    @media print {
+        padding-top: 3cm;
+    }
+}
+#floatingText {
+    top: 50vh;
+    left: 50vw;
+    color: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    text-transform: uppercase;
+    p {
+        margin-bottom: 0;
+    }
+    transform: translateX(50%) translateY(50%) rotate(305.3deg) scale(15);
 }

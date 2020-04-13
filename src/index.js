@@ -4,10 +4,12 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {FirebaseProvider} from './firebase';
 import ReduxProvider from './redux';
+import MaskDiv from './components/MaskDiv'
 
 ReactDOM.render(
     <ReduxProvider>
         <FirebaseProvider>
+            <MaskDiv/>
             <App />
         </FirebaseProvider>
     </ReduxProvider>,

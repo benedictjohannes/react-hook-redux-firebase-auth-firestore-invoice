@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
-import './App.scss';
-import useFirebase from './firebase';
-import {useDispatch, actions, useSelector} from './redux';
+import useFirebase from '../firebase';
+import {useDispatch, actions, useSelector} from '../redux';
 
 import {Form} from 'react-bootstrap';
 import {Formik} from 'formik';
@@ -33,11 +32,11 @@ const SignUpForm = () => {
     });
     const signInGoogle = () =>
         firebase.signInWithGoogle().then((authUser) => {
-            dispatch({type: actions.AUTH_USER_SET, authUser});
+            dispatch({type: actions.AUTH_USER_SET, payload: authUser});
         });
     const signInFacebook = () =>
         firebase.signInWithFacebook().then((authUser) => {
-            dispatch({type: actions.AUTH_USER_SET, authUser});
+            dispatch({type: actions.AUTH_USER_SET, payload: authUser});
         });
     return (
         <div className='signInOutForm border-primary'>
@@ -52,7 +51,7 @@ const SignUpForm = () => {
                         .createUserWithEmailAndPassword(values.email, values.pass1)
                         .then(() => firebase.auth.currentUser.updateProfile({displayName: values.displayName}))
                         .then(() => firebase.sendEmailVerification())
-                        .then(() => dispatch({type: actions.AUTH_USER_SET, authUser: firebase.auth.currentUser}))
+                        .then(() => dispatch({type: actions.AUTH_USER_SET, payload: firebase.auth.currentUser}))
                         .then(() => {
                             setSubmitting(false);
                             resetForm();
@@ -129,7 +128,7 @@ const SignUpForm = () => {
                             </Button>
                             <Button
                                 variant='outline-info'
-                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, current: 'signIn'})}
+                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, payload: 'signIn'})}
                             >
                                 Sign In
                             </Button>
@@ -167,11 +166,11 @@ const SignInForm = () => {
     });
     const signInGoogle = () =>
         firebase.signInWithGoogle().then((authUser) => {
-            dispatch({type: actions.AUTH_USER_SET, authUser});
+            dispatch({type: actions.AUTH_USER_SET, payload: authUser});
         });
     const signInFacebook = () =>
         firebase.signInWithFacebook().then((authUser) => {
-            dispatch({type: actions.AUTH_USER_SET, authUser});
+            dispatch({type: actions.AUTH_USER_SET, payload: authUser});
         });
     return (
         <div className='signInOutForm border-primary'>
@@ -232,7 +231,7 @@ const SignInForm = () => {
                             </Button>
                             <Button
                                 variant='outline-info'
-                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, current: 'signUp'})}
+                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, payload: 'signUp'})}
                             >
                                 Create Account
                             </Button>
@@ -251,7 +250,7 @@ const SignInForm = () => {
                         <div className='d-flex flex-row h-100 mt-4 justify-content-center'>
                             <Button
                                 variant='outline-secondary'
-                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, current: 'forget'})}
+                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, payload: 'forget'})}
                             >
                                 Forget Password
                             </Button>
@@ -282,7 +281,7 @@ const ForgetForm = () => {
                 <p className='mb-5'>Please check your inbox</p>
                 <Button
                     variant='outline-info'
-                    onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, current: 'signIn'})}
+                    onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, payload: 'signIn'})}
                 >
                     Sign In
                 </Button>
@@ -336,13 +335,13 @@ const ForgetForm = () => {
                         <div className='d-flex flex-row mt-4 justify-content-between align-baseline'>
                             <Button
                                 variant='outline-info'
-                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, current: 'signIn'})}
+                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, payload: 'signIn'})}
                             >
                                 Sign In
                             </Button>
                             <Button
                                 variant='outline-info'
-                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, current: 'signUp'})}
+                                onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, payload: 'signUp'})}
                             >
                                 Create Account
                             </Button>
@@ -354,7 +353,7 @@ const ForgetForm = () => {
     );
 };
 export const LoginLogout = () => {
-    const current = useSelector((state) => state.login_logout && state.login_logout.current);
+    const current = useSelector((state) => state.login_logout);
     const components = {
         signUp: SignUpForm,
         signIn: SignInForm,
@@ -374,8 +373,22 @@ const NeedAuthentication = ({children}) => {
     return <LoginLogout/>
 }
 
+export const syncUserData = ({firebase, dispatch, session}) => {
+    if (!(session && session.uid) ) return;
+    firebase.user(session.uid)
+        .onSnapshot(snapshot => {
+            if (snapshot.exists) {
+            const data = snapshot.data()
+                dispatch({type: actions.USERDATA_SET, payload: data});
+            } else {
+                const bareData = {clients: [], email: session.email}
+                firebase.user(session.uid).set(bareData)
+                dispatch({type: actions.USERDATA_SET, payload: bareData});
+            }
+        })
+};
+
 export const useAuthentication = () => useSelector(state => state.session)
-export const useAuthenticateRole = requiredRole => useSelector(state => state.session && state.session.data && state.session.data.role && state.session.data.role.length && typeof state.session.data.role === 'object' && state.session.data.role.includes(requiredRole))
 
 
 export default NeedAuthentication

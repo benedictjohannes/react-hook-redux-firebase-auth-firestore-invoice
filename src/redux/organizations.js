@@ -3,12 +3,12 @@ import {applyPayloadOrNull} from './index'
 
 const initialState = null
 
-const loginLogoutReducer = (state = initialState, action) => {
+const organizationReducer = (state = initialState, action) => {
     switch (action.type) {
-        case actions.LOGIN_LOGOUT_PAGE_SET: 
+        case actions.ORGANIZATIONS_SET: 
             return applyPayloadOrNull(state,action)
         default: return state
     }
 }
 
-export default loginLogoutReducer
+export default organizationReducer

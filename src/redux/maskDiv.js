@@ -1,14 +1,14 @@
 import actions from './actions'
 import {applyPayloadOrNull} from './index'
 
-const initialState = null
+const initialState = false
 
-const loginLogoutReducer = (state = initialState, action) => {
+const maskDivReducer = (state = initialState, action) => {
     switch (action.type) {
-        case actions.LOGIN_LOGOUT_PAGE_SET: 
+        case actions.MASKDIV_SET: 
             return applyPayloadOrNull(state,action)
         default: return state
     }
 }
 
-export default loginLogoutReducer
+export default maskDivReducer

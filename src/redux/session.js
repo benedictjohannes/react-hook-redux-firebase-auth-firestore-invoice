@@ -1,13 +1,12 @@
 import actions from './actions'
+import {applyPayloadOrNull} from './index'
 
 const initialState = null
-
-const applySetAuthUser = (_, action) => action.authUser ? action.authUser : null
 
 const sessionReducer = (state = initialState, action) => {
     switch (action.type) {
         case actions.AUTH_USER_SET: 
-            return applySetAuthUser(state,action)
+            return applyPayloadOrNull(state,action)
         default: return state
     }
 }

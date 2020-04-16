@@ -51,7 +51,7 @@ const InvoiceList = () => {
     };
     const copyInvoiceLink = id => {
         navigator.clipboard
-            .writeText(`https://invoice.encelerate.com/view_single_invoice/${id}`)
+            .writeText(`https://${process.env.REACT_APP_DOMAIN}/view_single_invoice/${id}`)
             .then(_ => {})
             .catch(_ => {});
     };

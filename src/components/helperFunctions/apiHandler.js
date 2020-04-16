@@ -1,7 +1,4 @@
-let server = '/api/';
-if (process.env.NODE_ENV === 'development') {
-    server = 'https://invoice.encelerate.com/api/';
-}
+let server = `https://${process.env.REACT_APP_FUNCTION_DOMAIN}`;
 
 async function apiHandler(method, address, body) {
     let reqAddress = server;

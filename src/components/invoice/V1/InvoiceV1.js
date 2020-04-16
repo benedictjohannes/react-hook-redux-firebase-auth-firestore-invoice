@@ -80,7 +80,7 @@ On the next lines
 
 const fetchInvoice = async ({invoiceId, setInvoiceData, setLoading}) => {
     try {
-        const fetchedRequest = await apiHandler('POST', 'getInvoiceById', JSON.stringify({id: invoiceId}));
+        const fetchedRequest = await apiHandler('POST', `${process.env.REACT_APP_FUNCTION_PATH}`, JSON.stringify({id: invoiceId}));
         const {data} = fetchedRequest;
         setInvoiceData(data);
         setLoading(!data);

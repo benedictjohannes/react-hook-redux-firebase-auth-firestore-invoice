@@ -72,7 +72,7 @@ const OrganizationDisplay = ({organizationId}) => {
                     reject(error);
                 },
                 () => {
-                    resolve(`http://files.invoice.encelerate.com/${filename}`);
+                    resolve(`http://${process.env.REACT_APP_IMAGE_FILES_DOMAIN}/${filename}`);
                 }
             );
         });

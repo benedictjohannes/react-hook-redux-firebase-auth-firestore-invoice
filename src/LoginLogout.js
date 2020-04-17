@@ -119,7 +119,7 @@ const SignUpForm = () => {
                             />
                             {touched.pass2 && errors.pass2 ? <div className='is-invalid'>{errors.pass2}</div> : null}
                         </Form.Group>
-                        <div className='d-flex flex-row justify-content-between align-baseline'>
+                        <div className='d-flex flex-row justify-content-between'>
                             <Button
                                 variant='primary'
                                 type='submit'
@@ -134,8 +134,8 @@ const SignUpForm = () => {
                                 Sign In
                             </Button>
                         </div>
-                        <div className='d-flex flex-row h-100 mt-4 align-baseline justify-content-between'>
-                            <p className='mt-1 mb-0'>Or sign in with</p>
+                        <div className='d-flex flex-row h-100 mt-4 align-items-baseline justify-content-between'>
+                            <p className='mb-0'>Or sign in with</p>
                             <div>
                                 <Button variant='outline-primary p-1 px-2 h-100 mx-2' onClick={() => signInGoogle()}>
                                     <FontAwesomeIcon icon={faGooglePlus} className='h-100' size='lg' />
@@ -222,7 +222,7 @@ const SignInForm = () => {
                             />
                             {touched.pass && errors.pass ? <div className='is-invalid'>{errors.pass}</div> : null}
                         </Form.Group>
-                        <div className='d-flex flex-row justify-content-between align-baseline'>
+                        <div className='d-flex flex-row justify-content-between'>
                             <Button
                                 variant='primary'
                                 type='submit'
@@ -237,8 +237,8 @@ const SignInForm = () => {
                                 Create Account
                             </Button>
                         </div>
-                        <div className='d-flex flex-row h-100 mt-4 align-baseline justify-content-between'>
-                            <p className='mt-1 mb-0'>Or sign in with</p>
+                        <div className='d-flex flex-row h-100 mt-4 align-items-baseline justify-content-between'>
+                            <p className='mb-0'>Or sign in with</p>
                             <div>
                                 <Button variant='outline-primary p-1 px-2 h-100 mx-2' onClick={() => signInGoogle()}>
                                     <FontAwesomeIcon icon={faGooglePlus} className='h-100' size='lg' />
@@ -333,7 +333,7 @@ const ForgetForm = () => {
                                 Send Password Reset Link
                             </Button>
                         </div>
-                        <div className='d-flex flex-row mt-4 justify-content-between align-baseline'>
+                        <div className='d-flex flex-row mt-4 justify-content-between'>
                             <Button
                                 variant='outline-info'
                                 onClick={() => dispatch({type: actions.LOGIN_LOGOUT_PAGE_SET, current: 'signIn'})}

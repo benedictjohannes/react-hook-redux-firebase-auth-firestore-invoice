@@ -25,7 +25,7 @@ const seedData = {
 Note that first line is bolded
 Next lines are not`,
             quantity: 1,
-            price: 1234567
+            price: 1234567,
         },
         {
             description: `Product name on first line
@@ -33,8 +33,8 @@ Product details
 On the next lines
 `,
             quantity: 1,
-            price: 12345678
-        }
+            price: 12345678,
+        },
     ],
     itemTotalName: 'Items Subtotal',
     totalAdjustments: [
@@ -42,13 +42,13 @@ On the next lines
             name: 'Discount',
             resultName: 'Bill after discount',
             action: 'applyFactor',
-            actionValue: -0.5
+            actionValue: -0.5,
         },
         {
             resultName: 'Bill before tax',
             name: 'Allowance for 2% Art. 23 tax',
             action: 'cancelFactor',
-            actionValue: -0.02
+            actionValue: -0.02,
         },
         {
             action: 'chain',
@@ -57,15 +57,15 @@ On the next lines
                 {
                     name: 'Rounding',
                     action: 'round',
-                    actionValue: -3
+                    actionValue: -3,
                 },
                 {
                     name: 'Proffessional discount',
                     action: 'applyAdd',
-                    actionValue: -100000
-                }
-            ]
-        }
+                    actionValue: -100000,
+                },
+            ],
+        },
     ],
     remarks: `** More Information**
 
@@ -75,12 +75,16 @@ On the next lines
     - Bank Account Number 2
 3. Terms of payment
     - Pay faster for more discount!
-`
+`,
 };
 
 const fetchInvoice = async ({invoiceId, setInvoiceData, setLoading}) => {
     try {
-        const fetchedRequest = await apiHandler('POST', `${process.env.REACT_APP_FUNCTION_PATH}`, JSON.stringify({id: invoiceId}));
+        const fetchedRequest = await apiHandler(
+            'POST',
+            `${process.env.REACT_APP_FUNCTION_PATH}`,
+            JSON.stringify({id: invoiceId})
+        );
         const {data} = fetchedRequest;
         setInvoiceData(data);
         setLoading(!data);
@@ -96,6 +100,12 @@ export const SingleInvoiceViewer = ({invoiceId}) => {
     useEffect(() => {
         fetchInvoice({invoiceId, setInvoiceData, setLoading});
     }, [invoiceId, setInvoiceData]);
+    const printInvoice = useCallback(() => window.print(), []);
+    useEffect(() => {
+        if (!invoiceData) return;
+        const timeOut = setTimeout(() => printInvoice(), 750);
+        return () => clearTimeout(timeOut);
+    }, [invoiceData, printInvoice]);
     if (loading)
         return (
             <Container className='my-3'>
@@ -116,20 +126,33 @@ export const SingleInvoiceViewer = ({invoiceId}) => {
                 </Row>
             </Container>
         );
-    return <V1 editable={false} currentInvoiceData={invoiceData} />;
+    return (
+        <div>
+            <Container className='my-3 d-print-none'>
+                <Row>
+                    <Col>
+                        <button className='btn btn-primary float-right' onClick={printInvoice}>
+                            Print
+                        </button>
+                    </Col>
+                </Row>
+            </Container>
+            <V1 editable={false} currentInvoiceData={invoiceData} />;
+        </div>
+    );
 };
 
 const InvoiceEditor = ({cancelEditInvoice, editable = true}) => {
     const dispatch = useDispatch();
     const firebase = useFirebase();
-    const activeOrganization = useShallowSelector(state => state.activeOrganization);
+    const activeOrganization = useShallowSelector((state) => state.activeOrganization);
     const {from, to} = activeOrganization;
-    const reduxInvoice = useShallowSelector(state => state.editInvoice);
+    const reduxInvoice = useShallowSelector((state) => state.editInvoice);
     const {originalInvoice, currentInvoice} = reduxInvoice;
     const usedOriginalInvoiceData = originalInvoice && Object.keys(originalInvoice).length ? originalInvoice : seedData;
     const usedCurrentInvoiceData = currentInvoice && Object.keys(currentInvoice).length ? currentInvoice : null;
     const updateInvoice = useCallback(
-        data => {
+        (data) => {
             dispatch({type: actions.EDIT_INVOICE_SET, payload: {currentInvoice: data}});
         },
         [dispatch]
@@ -160,36 +183,36 @@ const InvoiceEditor = ({cancelEditInvoice, editable = true}) => {
 const actionProcessor = {
     applyFactor: (originalValue, actionValue) => ({
         resultValue: originalValue * (1 + actionValue),
-        diff: originalValue * actionValue
+        diff: originalValue * actionValue,
     }),
     cancelFactor: (originalValue, actionValue) => ({
         resultValue: originalValue / (1 + actionValue),
-        diff: originalValue / (1 + actionValue) - originalValue
+        diff: originalValue / (1 + actionValue) - originalValue,
     }),
     applyAdd: (originalValue, actionValue) => ({
         resultValue: originalValue + actionValue,
-        diff: actionValue
+        diff: actionValue,
     }),
     round: (originalValue, actionValue) => {
         let resultValue = Math.round(originalValue * Math.pow(10, actionValue)) / Math.pow(10, actionValue);
         return {
             resultValue,
-            diff: resultValue - originalValue
+            diff: resultValue - originalValue,
         };
     },
     chain: (originalValue, actionValue) => {
-        let steps = actionValue.map(action => ({
+        let steps = actionValue.map((action) => ({
             value: actionProcessor[action.action](originalValue, action.actionValue).diff,
-            description: action.name
+            description: action.name,
         }));
         let resultValue = steps.reduce((sum, curr) => sum + curr.value, originalValue);
         return {
             resultValue,
-            diff: steps
+            diff: steps,
         };
-    }
+    },
 };
-export const processTotalEntries = entries => entries.reduce((sum, curr) => sum + curr.quantity * curr.price, 0);
+export const processTotalEntries = (entries) => entries.reduce((sum, curr) => sum + curr.quantity * curr.price, 0);
 
 const NoOrganizationSelected = ({link, name, destination, editing}) => (
     <div className='my-4'>
@@ -213,12 +236,12 @@ const V1 = ({
     updateInvoice,
     cancelEditInvoice,
     from,
-    to
+    to,
 }) => {
     const [data, setData] = useState(currentInvoiceData ? currentInvoiceData : originalInvoiceData);
     const [editing, setEditing] = useState(false);
     const {entries, totalAdjustments, remarks, itemTotalName, invoice_date, invoice_no, invoice_status = '1'} = data;
-    const deleteRow = index => {
+    const deleteRow = (index) => {
         const newEntries = [...entries];
         newEntries.splice(index, 1);
         setData({...data, entries: newEntries});
@@ -234,21 +257,21 @@ const V1 = ({
         newEntries.push(templateRow);
         setData({...data, entries: newEntries});
     };
-    const setItemTotalName = value => setData({...data, itemTotalName: value});
-    const saveRemarks = text => setData({...data, remarks: text});
-    const saveTotalAdjustments = adjustments => setData({...data, totalAdjustments: adjustments});
+    const setItemTotalName = (value) => setData({...data, itemTotalName: value});
+    const saveRemarks = (text) => setData({...data, remarks: text});
+    const saveTotalAdjustments = (adjustments) => setData({...data, totalAdjustments: adjustments});
     useEffect(() => {
         if (!updateInvoice) return;
         updateInvoice(data);
     }, [data, updateInvoice]);
     useEffect(() => {
-        setData(data => ({...data, ...originalInvoiceData}));
+        setData((data) => ({...data, ...originalInvoiceData}));
     }, [originalInvoiceData]);
     useEffect(() => {
-        if (editable && from && Object.keys(from).length) setData(data => ({...data, from}));
-        if (editable && to && Object.keys(to).length) setData(data => ({...data, to}));
+        if (editable && from && Object.keys(from).length) setData((data) => ({...data, from}));
+        if (editable && to && Object.keys(to).length) setData((data) => ({...data, to}));
     }, [editable, data.from, data.to, from, to]);
-    const validateData = data => {
+    const validateData = (data) => {
         try {
             const {from, to, entries, itemTotalName, totalAdjustments, remarks, invoice_no, invoice_date} = data;
             const {name: nameFrom, detail: detailFrom, logoUrl: logoUrlFrom} = from;
@@ -372,7 +395,9 @@ const V1 = ({
                                 {editing ? (
                                     <DatePicker
                                         value={invoice_date ? new Date(invoice_date) : null}
-                                        onChange={value => setData({...data, invoice_date: new Date(value).getTime()})}
+                                        onChange={(value) =>
+                                            setData({...data, invoice_date: new Date(value).getTime()})
+                                        }
                                     />
                                 ) : (
                                     <p>
@@ -390,7 +415,7 @@ const V1 = ({
                                     <input
                                         className='form-control form-control-sm'
                                         value={invoice_no}
-                                        onChange={e => setData({...data, invoice_no: e.target.value})}
+                                        onChange={(e) => setData({...data, invoice_no: e.target.value})}
                                     />
                                 ) : (
                                     <p>
@@ -436,7 +461,7 @@ const V1 = ({
                                             editable={editing}
                                             rowData={row}
                                             key={index}
-                                            saveRowData={rowData => replaceRow(rowData, index)}
+                                            saveRowData={(rowData) => replaceRow(rowData, index)}
                                             deleteRow={() => deleteRow(index)}
                                         />
                                     ))}
@@ -514,7 +539,7 @@ const SubtotalNameEditor = ({editable, value, setValue}) => {
                 <input
                     className='form-control mb-0'
                     value={subtotalName}
-                    onChange={e => setSubtotalName(e.target.value)}
+                    onChange={(e) => setSubtotalName(e.target.value)}
                 />
             </>
         );
@@ -536,11 +561,11 @@ const processTotalValue = ({originalValue, originalName, actions}) =>
             let {value} = sum[sum.length - 1];
             let {name, resultName, action, actionValue} = curr;
             if (action === 'chain') {
-                let groupActionValues = actionValue.map(chainAction => ({
+                let groupActionValues = actionValue.map((chainAction) => ({
                     diff: actionProcessor[chainAction.action](value, chainAction.actionValue).diff,
                     action: chainAction.action,
                     actionValue: chainAction.actionValue,
-                    name: chainAction.name
+                    name: chainAction.name,
                 }));
                 let resultValue = value + groupActionValues.reduce((sum, curr) => sum + curr.diff, 0);
                 return [
@@ -550,8 +575,8 @@ const processTotalValue = ({originalValue, originalName, actions}) =>
                         resultName,
                         resultValue /* diff, */,
                         groupActionValues,
-                        value: resultValue // used for reduce processing
-                    }
+                        value: resultValue, // used for reduce processing
+                    },
                 ];
             }
             let {resultValue, diff} = actionProcessor[action](value, actionValue);
@@ -564,8 +589,8 @@ const processTotalValue = ({originalValue, originalName, actions}) =>
                     resultName,
                     resultValue,
                     diff,
-                    value: resultValue // used for reduce processing
-                }
+                    value: resultValue, // used for reduce processing
+                },
             ];
         },
         [{value: originalValue, description: originalName}]
@@ -589,7 +614,7 @@ const InvoiceRow = ({editable, rowData, saveRowData, deleteRow}) => {
                 <DescriptionDisplay
                     editing={editable && editing}
                     text={data.description}
-                    changeText={text => setData({...data, description: text.target.value})}
+                    changeText={(text) => setData({...data, description: text.target.value})}
                 />
             </td>
             <td align='right'>
@@ -597,7 +622,7 @@ const InvoiceRow = ({editable, rowData, saveRowData, deleteRow}) => {
                     editing={editable && editing}
                     formatter={rpDisplay}
                     number={data.price}
-                    changeNumber={number => setData({...data, price: number})}
+                    changeNumber={(number) => setData({...data, price: number})}
                 />
             </td>
             <td align='right'>
@@ -605,7 +630,7 @@ const InvoiceRow = ({editable, rowData, saveRowData, deleteRow}) => {
                     editing={editable && editing}
                     formatter={intDisplay}
                     number={data.quantity}
-                    changeNumber={number => setData({...data, quantity: number})}
+                    changeNumber={(number) => setData({...data, quantity: number})}
                 />
             </td>
             <td align='right'>
@@ -659,12 +684,12 @@ const DescriptionDisplay = ({editing, text, changeText}) =>
     );
 const NumberDisplay = ({editing, formatter, number, changeNumber}) => {
     const [text, setText] = React.useState(formatter(number));
-    const reportNumber = _ => {
+    const reportNumber = (_) => {
         const number = extractNumber(text);
         changeNumber(number);
         setText(formatter(number));
     };
-    const changeHandler = e => setText(e.target.value);
+    const changeHandler = (e) => setText(e.target.value);
     if (editing) return <input className='form-control' value={text} onChange={changeHandler} onBlur={reportNumber} />;
     return formatter(number);
 };
@@ -711,7 +736,7 @@ const Remarks = ({editable, value, saveValue}) => {
                     onChange={setMarkdown}
                     selectedTab={selectedTab}
                     onTabChange={setSelectedTab}
-                    generateMarkdownPreview={markdown => Promise.resolve(<ReactMarkdown source={markdown} />)}
+                    generateMarkdownPreview={(markdown) => Promise.resolve(<ReactMarkdown source={markdown} />)}
                 />
             ) : (
                 <ReactMarkdown source={markdown} />
@@ -738,7 +763,7 @@ const Totals = ({editable, startName, entries, totalAdjustments, saveTotalAdjust
         newAdjustments.splice(i, 1, data);
         setAdjustments(newAdjustments);
     };
-    const deleteRow = i => {
+    const deleteRow = (i) => {
         let newAdjustments = [...adjustments];
         newAdjustments.splice(i, 1);
         setAdjustments(newAdjustments);
@@ -758,7 +783,7 @@ const Totals = ({editable, startName, entries, totalAdjustments, saveTotalAdjust
             let processedTotalValue = processTotalValue({
                 originalValue: processTotalEntries(entries),
                 originalName: startName,
-                actions: adjustments
+                actions: adjustments,
             });
             setProcessedActions(processedTotalValue);
         } catch (e) {
@@ -769,7 +794,7 @@ const Totals = ({editable, startName, entries, totalAdjustments, saveTotalAdjust
         <TotalRowEditor
             key={index}
             value={action}
-            changeValue={value => replaceRow(value, index)}
+            changeValue={(value) => replaceRow(value, index)}
             deleteRow={() => deleteRow(index)}
         />
     );
@@ -820,7 +845,7 @@ const TotalRow = ({value}) => {
                             key={index}
                             value={{
                                 description: row.name,
-                                value: row.diff
+                                value: row.diff,
                             }}
                         />
                     </>
@@ -829,7 +854,7 @@ const TotalRow = ({value}) => {
                     value={{
                         description: value.resultName,
                         value: value.resultValue,
-                        separateBefore: true
+                        separateBefore: true,
                     }}
                 />
             </>
@@ -841,14 +866,14 @@ const TotalRow = ({value}) => {
                 <TotalRowValueDisplay
                     value={{
                         description: value.name,
-                        value: value.diff
+                        value: value.diff,
                     }}
                 />
                 <TotalRowValueDisplay
                     value={{
                         description: value.resultName,
                         value: value.resultValue,
-                        separateBefore: true
+                        separateBefore: true,
                     }}
                 />
             </>
@@ -868,7 +893,7 @@ const TotalRowValueDisplay = ({value}) => (
 );
 
 const TotalRowEditor = ({value, changeValue, isChain, deleteRow}) => {
-    const changeActionType = e => {
+    const changeActionType = (e) => {
         let {value: newValue} = e.target;
         if (newValue === 'chain') {
             const defaultStarterArray = [{action: 'round', actionValue: -3}];
@@ -876,15 +901,15 @@ const TotalRowEditor = ({value, changeValue, isChain, deleteRow}) => {
         }
         changeValue({...value, action: newValue});
     };
-    const changeName = e => {
+    const changeName = (e) => {
         let {value: newValue} = e.target;
         changeValue({...value, name: newValue});
     };
-    const changeResultName = e => {
+    const changeResultName = (e) => {
         let {value: newValue} = e.target;
         changeValue({...value, resultName: newValue});
     };
-    const changeActionValue = e => {
+    const changeActionValue = (e) => {
         let {value: newValue} = e.target;
         if (Number.isNaN(Number(newValue))) return;
         value.action !== 'chain' && changeValue({...value, actionValue: Number(newValue)});
@@ -895,7 +920,7 @@ const TotalRowEditor = ({value, changeValue, isChain, deleteRow}) => {
         newActionValue.push(templateRow);
         changeValue({...value, actionValue: newActionValue});
     };
-    const deleteSubrow = row => {
+    const deleteSubrow = (row) => {
         let newActionValue = [...value.actionValue];
         newActionValue.splice(row, 1);
         changeValue({...value, actionValue: newActionValue});
@@ -929,8 +954,8 @@ const TotalRowEditor = ({value, changeValue, isChain, deleteRow}) => {
                     <label>Type</label>
                     <select className='form-control' value={value.action} onChange={changeActionType}>
                         {Object.keys(actionProcessor)
-                            .filter(r => !isChain || r !== 'chain')
-                            .map(r => (
+                            .filter((r) => !isChain || r !== 'chain')
+                            .map((r) => (
                                 <option value={r}>{r}</option>
                             ))}
                     </select>
@@ -963,7 +988,7 @@ const TotalRowEditor = ({value, changeValue, isChain, deleteRow}) => {
                             value={subAction}
                             isChain={true}
                             deleteRow={() => deleteSubrow(index)}
-                            changeValue={data => changeSubrow(data, index)}
+                            changeValue={(data) => changeSubrow(data, index)}
                         />
                     ))}
                 </>

@@ -57,8 +57,10 @@ const SignUpForm = () => {
                             resetForm();
                         })
                         .catch((error) => {
-                            setError(error.message ? error.message : error.code ? error.code : 'Sorry, an error occured')
-                            setSubmitting(false)
+                            setError(
+                                error.message ? error.message : error.code ? error.code : 'Sorry, an error occured'
+                            );
+                            setSubmitting(false);
                         });
                 }}
             >
@@ -160,9 +162,7 @@ const SignInForm = () => {
             .email('* should be a valid email address')
             .max(100, '* should be less than 100 characters')
             .required('* email address is required'),
-        pass: yup
-            .string()
-            .required('* password cannot be empty'),
+        pass: yup.string().required('* password cannot be empty'),
     });
     const signInGoogle = () =>
         firebase.signInWithGoogle().then((authUser) => {
@@ -187,9 +187,11 @@ const SignInForm = () => {
                             setSubmitting(false);
                             resetForm();
                         })
-                        .catch( error => {
-                            setError(error.message ? error.message : error.code ? error.code : 'Sorry, an error occured')
-                            setSubmitting(false)
+                        .catch((error) => {
+                            setError(
+                                error.message ? error.message : error.code ? error.code : 'Sorry, an error occured'
+                            );
+                            setSubmitting(false);
                         });
                 }}
             >
@@ -303,8 +305,10 @@ const ForgetForm = () => {
                             setResetDone(true);
                         })
                         .catch((error) => {
-                            setError(error.message ? error.message : error.code ? error.code : 'Sorry, an error occured')
-                            setSubmitting(false)
+                            setError(
+                                error.message ? error.message : error.code ? error.code : 'Sorry, an error occured'
+                            );
+                            setSubmitting(false);
                         });
                 }}
             >
@@ -361,34 +365,37 @@ export const LoginLogout = () => {
     };
     const UsedComponent = current ? components[current] : components.signIn;
     return (
-        <div className='vh-100 w-100 overflow-hidden d-flex flex-row align-items-center justify-content-center bg-secondary'>
-            <UsedComponent />
+        <div
+            className='vh-100 w-100 overflow-hidden d-flex flex-column align-items-center justify-content-center bg-secondary'
+            style={{zIndex: -1, top: 0, position: 'absolute'}}
+        >
+            <div className='my-auto'>
+                <UsedComponent />
+            </div>
         </div>
     );
 };
 
 const NeedAuthentication = ({children}) => {
-    const session = useSelector(state => !!state.session)
-    if (session) return <> {children}</>
-    return <LoginLogout/>
-}
-
-export const syncUserData = ({firebase, dispatch, session}) => {
-    if (!(session && session.uid) ) return;
-    firebase.user(session.uid)
-        .onSnapshot(snapshot => {
-            if (snapshot.exists) {
-            const data = snapshot.data()
-                dispatch({type: actions.USERDATA_SET, payload: data});
-            } else {
-                const bareData = {clients: [], email: session.email}
-                firebase.user(session.uid).set(bareData)
-                dispatch({type: actions.USERDATA_SET, payload: bareData});
-            }
-        })
+    const session = useSelector((state) => !!state.session);
+    if (session) return <> {children}</>;
+    return <LoginLogout />;
 };
 
-export const useAuthentication = () => useSelector(state => state.session)
+export const syncUserData = ({firebase, dispatch, session}) => {
+    if (!(session && session.uid)) return;
+    firebase.user(session.uid).onSnapshot((snapshot) => {
+        if (snapshot.exists) {
+            const data = snapshot.data();
+            dispatch({type: actions.USERDATA_SET, payload: data});
+        } else {
+            const bareData = {clients: [], email: session.email};
+            firebase.user(session.uid).set(bareData);
+            dispatch({type: actions.USERDATA_SET, payload: bareData});
+        }
+    });
+};
 
+export const useAuthentication = () => useSelector((state) => state.session);
 
-export default NeedAuthentication
+export default NeedAuthentication;

@@ -5,7 +5,7 @@ import {Container, Navbar, Nav} from 'react-bootstrap'
 import {useAuthentication} from './LoginLogout'
 import useFirebase from '../firebase'
 
-const NavMenu = () => {
+const NavMenu = ({className}) => {
     const session = useAuthentication();
     const firebase = useFirebase();
     const loggedIn = !!session
@@ -34,7 +34,7 @@ const NavMenu = () => {
         </Nav.Link>
     );
     return (
-        <div className='bg-dark'>
+        <div className={`bg-dark ${className}`}>
             <Container fluid='lg'>
                 <Navbar expand='md' sticky='top' variant='dark' className='px-0 justify-content-between'>
                     <Navbar.Brand as={Link} to='/' className='p-0 d-flex flex-row align-items-center mr-auto'>

@@ -36,13 +36,13 @@ const NavMenu = () => {
     return (
         <div className='bg-dark'>
             <Container fluid='lg'>
-                <Navbar expand='md' sticky='top' variant='dark' className='px-0'>
+                <Navbar expand='md' sticky='top' variant='dark' className='px-0 justify-content-between'>
                     <Navbar.Brand as={Link} to='/' className='p-0 d-flex flex-row align-items-center mr-auto'>
                         <img src='/enceleratelogo.svg' alt='' className='p-0' style={{height: 40}} />
                         <span className='d-none d-lg-block'>invoice</span>
                     </Navbar.Brand>
                     <Navbar.Toggle aria-controls='responsive-navbar-nav' />
-                    <Navbar.Collapse id='responsive-navbar-nav'>
+                    <Navbar.Collapse id='responsive-navbar-nav' className='flex-grow-0'>
                         <Nav>
                             {menuItems.filter(menuItemsFilter).map(menuItemsMap)}
                             {!!session && <Nav.Link onClick={() => firebase.signOut()}>Sign Out</Nav.Link>}

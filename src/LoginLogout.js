@@ -134,7 +134,7 @@ const SignUpForm = () => {
                                 Sign In
                             </Button>
                         </div>
-                        <div className='d-flex flex-row h-100 mt-4 align-items-baseline justify-content-between'>
+                        <div className='d-flex flex-row h-100 mt-4 align-items-center justify-content-between'>
                             <p className='mb-0'>Or sign in with</p>
                             <div>
                                 <Button variant='outline-primary p-1 px-2 h-100 mx-2' onClick={() => signInGoogle()}>
@@ -237,7 +237,7 @@ const SignInForm = () => {
                                 Create Account
                             </Button>
                         </div>
-                        <div className='d-flex flex-row h-100 mt-4 align-items-baseline justify-content-between'>
+                        <div className='d-flex flex-row h-100 mt-4 align-items-center justify-content-between'>
                             <p className='mb-0'>Or sign in with</p>
                             <div>
                                 <Button variant='outline-primary p-1 px-2 h-100 mx-2' onClick={() => signInGoogle()}>

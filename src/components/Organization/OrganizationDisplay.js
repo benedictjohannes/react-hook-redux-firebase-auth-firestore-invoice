@@ -245,6 +245,21 @@ const OrganizationDataEditor = ({logoImg, setLogoFile, organizationData, setOrga
         newData.detail = newDetail;
         setOrganizationData(newData);
     };
+    const deleteOrganizationDetail = index => {
+        let newData = {...organizationData};
+        let newDetail = newData.detail;
+        newDetail.splice(index, 1);
+        newData.detail = newDetail;
+        setOrganizationData(newData);
+    }
+    const addOrganizationDetail = () => {
+        let newData = {...organizationData};
+        let newDetail = newData.detail;
+        newDetail.push({field: '', value: ''});
+        newData.detail = newDetail;
+        setOrganizationData(newData);
+
+    }
     return (
         <div>
             <h1 className='h3 mb-1 mt-2'>Logo</h1>
@@ -289,26 +304,29 @@ const OrganizationDataEditor = ({logoImg, setLogoFile, organizationData, setOrga
             <h3 className='h3 mb-1 mt-2'>Company Detail</h3>
             <dl className='d-flex flex-row flex-wrap'>
                 {detail &&
-                    detail.length &&
+                    detail.length > 0 &&
                     detail.map((row, index) => (
-                        <>
+                        <React.Fragment key={index}>
                             <dt className='w-25'>
                                 <input
                                     className='form-control w-100 px-1'
                                     value={row.field}
                                     onChange={e => changeOrganizationDetail(e, index, true)}
                                 />
+                                <Button variant='danger' className='py-1 float-right mt-1'><FontAwesomeIcon icon={faTrash} onClick={() => deleteOrganizationDetail(index)}/></Button>
                             </dt>
                             <dd className='w-75 pl-2'>
                                 <textarea
                                     className='form-control w-100 px-1'
                                     value={row.value}
                                     onChange={e => changeOrganizationDetail(e, index)}
+                                    rows={4}
                                 />
                             </dd>
-                        </>
+                        </React.Fragment>
                     ))}
             </dl>
+            <Button variant='primary' className='float-right py-1' onClick={addOrganizationDetail}><FontAwesomeIcon icon={faPlus}/></Button>
         </div>
     );
 };

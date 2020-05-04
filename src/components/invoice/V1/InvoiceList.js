@@ -173,7 +173,7 @@ const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoi
         <tbody>
             {invoices.map((invoice, index) => {
                 const {invoice_date, invoice_no, entries, invoice_status = '1', id} = invoice;
-                const destination = direction === 'from' ? invoice.from.name : invoice.to.name;
+                const destination = direction === 'from' ? invoice.to.name : invoice.from.name;
                 return (
                     <tr key={index}>
                         <td className='align-middle'>{dateToYyyyMmDd(invoice_date)} </td>

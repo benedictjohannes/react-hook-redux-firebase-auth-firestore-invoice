@@ -369,9 +369,7 @@ export const LoginLogout = () => {
             className='vh-100 w-100 overflow-hidden d-flex flex-column align-items-center justify-content-center bg-secondary'
             style={{zIndex: -1, top: 0, position: 'absolute'}}
         >
-            <div className='my-auto'>
                 <UsedComponent />
-            </div>
         </div>
     );
 };

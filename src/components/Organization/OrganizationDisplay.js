@@ -378,11 +378,11 @@ const OrganizationMemberEditor = ({editable, organizationData, setOrganizationDa
     const superadmins = superadminsRaw && superadminsRaw.length ? sortFilter(superadminsRaw.map(emailToObject)) : [];
     const admins =
         adminsRaw && adminsRaw.length
-            ? sortFilter([...adminsRaw.map(emailToObject), ...superadmins.map(objectEmailToObjectInherited)])
+            ? sortFilter([...superadmins.map(objectEmailToObjectInherited), ...adminsRaw.map(emailToObject)])
             : [];
     const members =
         membersRaw && membersRaw.length
-            ? sortFilter([...membersRaw.map(emailToObject), ...admins.map(objectEmailToObjectInherited)])
+            ? sortFilter([...admins.map(objectEmailToObjectInherited), ...membersRaw.map(emailToObject)])
             : [];
     useEffect(() => {
         if (!(superadminsRaw && superadminsRaw.length)) {

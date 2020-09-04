@@ -3,7 +3,7 @@ import React, {useState, useCallback, useEffect} from 'react';
 import {Container, Row, Col, Button, Nav} from 'react-bootstrap';
 import {navigate, Link} from '@reach/router';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCheckCircle, faTimes, faEdit, faCopy, faEye} from '@fortawesome/free-solid-svg-icons';
+import {faCheckCircle, faTimes, faEdit, faCopy, faEye, faShare} from '@fortawesome/free-solid-svg-icons';
 
 import {actions, useDispatch, useSelector} from '../../../redux';
 import useFirebase from '../../../firebase';
@@ -49,6 +49,17 @@ const InvoiceList = () => {
         dispatch({type: actions.EDIT_INVOICE_SET, payload: {originalInvoice: {...data}}});
         dispatch({type: actions.INVOICES_PARAM_SET, payload: {param: {viewSingleInvoice: i}}});
     };
+    const copyInvoice = i => {
+        const data = invoicesData.find(invoice => invoice.id === i);
+        const copiedData = {...data}
+        delete copiedData.id
+        delete copiedData.invoice_status
+        delete copiedData.invoice_date
+        delete copiedData.invoice_no
+        dispatch({type: actions.EDIT_INVOICE_SET, payload: {originalInvoice: copiedData}});
+        navigate('/invoices/create')
+        dispatch({type: actions.INVOICES_PARAM_SET, payload: {param: {viewSingleInvoice: false}}});
+    }
     const copyInvoiceLink = id => {
         navigator.clipboard
             .writeText(`https://${process.env.REACT_APP_DOMAIN}/view_single_invoice/${id}`)
@@ -124,7 +135,7 @@ const InvoiceList = () => {
                             {invoicesData && invoicesData.length ? (
                                 <InvoiceListTable
                                     invoices={invoicesData}
-                                    {...{updateStatus, direction, setViewSingleInvoice, copyInvoiceLink}}
+                                    {...{updateStatus, direction, setViewSingleInvoice, copyInvoiceLink, copyInvoice}}
                                 />
                             ) : (
                                 <div className='my-5 text-center'>
@@ -151,12 +162,12 @@ const CopierButton = ({id, copyInvoiceLink}) => {
     };
     return (
         <button className={`btn ${copyVisible ? 'btn-success' : 'btn-primary'}`} onClick={doCopy}>
-            <FontAwesomeIcon icon={copyVisible ? faCheckCircle : faCopy} />
+            <FontAwesomeIcon icon={copyVisible ? faCheckCircle : faShare} />
         </button>
     );
 };
 
-const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoice, copyInvoiceLink}) => (
+const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoice, copyInvoiceLink, copyInvoice}) => (
     <table className='table table-hover'>
         <thead>
             <tr>
@@ -171,11 +182,11 @@ const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoi
             </tr>
         </thead>
         <tbody>
-            {invoices.map((invoice, index) => {
+            {invoices.map((invoice) => {
                 const {invoice_date, invoice_no, entries, invoice_status = '1', id} = invoice;
                 const destination = direction === 'from' ? invoice.to.name : invoice.from.name;
                 return (
-                    <tr key={index}>
+                    <tr key={invoice.id}>
                         <td className='align-middle'>{dateToYyyyMmDd(invoice_date)} </td>
                         <td className='align-middle'>{invoice_no} </td>
                         <td className='align-middle'>{rpDisplay(processTotalEntries(entries))}</td>
@@ -193,6 +204,9 @@ const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoi
                                 <CopierButton {...{id, copyInvoiceLink}} />
                                 <button className='btn btn-primary ml-2' onClick={() => setViewSingleInvoice(id)}>
                                     <FontAwesomeIcon icon={faEye} />
+                                </button>
+                                <button className='btn btn-primary ml-2' onClick={() => copyInvoice(id)}>
+                                    <FontAwesomeIcon icon={faCopy} />
                                 </button>
                             </div>
                         </td>

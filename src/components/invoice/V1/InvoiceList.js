@@ -3,7 +3,7 @@ import React, {useState, useCallback, useEffect} from 'react';
 import {Container, Row, Col, Button, Nav} from 'react-bootstrap';
 import {navigate, Link} from '@reach/router';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCheckCircle, faTimes, faEdit, faCopy, faEye, faShare, faArrowDown, faArrowUp, faLink} from '@fortawesome/free-solid-svg-icons';
+import {faCheckCircle, faTimes, faEdit, faCopy, faEye, faArrowDown, faArrowUp, faLink} from '@fortawesome/free-solid-svg-icons';
 
 import {actions, useDispatch, useSelector} from '../../../redux';
 import useFirebase from '../../../firebase';

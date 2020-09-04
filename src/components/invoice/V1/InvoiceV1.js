@@ -675,10 +675,10 @@ const DescriptionDisplay = ({editing, text, changeText}) =>
                     .split('\n')
                     .slice(1)
                     .map((r, i) => (
-                        <>
+                        <React.Fragment key={i}>
                             <br key={`b_${i}`} />
                             <span key={i}>{r}</span>
-                        </>
+                        </React.Fragment>
                     ))}
         </p>
     );

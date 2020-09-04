@@ -348,11 +348,11 @@ export const OrganizationDataViewer = ({logoImg, organizationData, dataOnly = fa
                 {name}
             </h1>
             <dl className='d-flex flex-row flex-wrap'>
-                {detail.map(row => (
-                    <>
+                {detail.map((row,i) => (
+                    <React.Fragment key={i}>
                         <dt className='w-25'>{row.field}</dt>
                         <dd className='w-75 pl-2'>{row.value}</dd>
-                    </>
+                    </React.Fragment>
                 ))}
             </dl>
         </div>

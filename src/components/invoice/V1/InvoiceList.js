@@ -3,7 +3,7 @@ import React, {useState, useCallback, useEffect} from 'react';
 import {Container, Row, Col, Button, Nav} from 'react-bootstrap';
 import {navigate, Link} from '@reach/router';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faCheckCircle, faTimes, faEdit, faCopy, faEye, faShare} from '@fortawesome/free-solid-svg-icons';
+import {faCheckCircle, faTimes, faEdit, faCopy, faEye, faShare, faArrowDown, faArrowUp, faLink} from '@fortawesome/free-solid-svg-icons';
 
 import {actions, useDispatch, useSelector} from '../../../redux';
 import useFirebase from '../../../firebase';
@@ -153,7 +153,7 @@ const InvoiceList = () => {
     );
 };
 
-const CopierButton = ({id, copyInvoiceLink}) => {
+const GetLinkButton = ({id, copyInvoiceLink}) => {
     const [copyVisible, setCopyVisible] = useState(false);
     const doCopy = () => {
         setCopyVisible(true);
@@ -162,27 +162,91 @@ const CopierButton = ({id, copyInvoiceLink}) => {
     };
     return (
         <button className={`btn ${copyVisible ? 'btn-success' : 'btn-primary'}`} onClick={doCopy}>
-            <FontAwesomeIcon icon={copyVisible ? faCheckCircle : faShare} />
+            <FontAwesomeIcon icon={copyVisible ? faCheckCircle : faLink} />
         </button>
     );
 };
 
-const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoice, copyInvoiceLink, copyInvoice}) => (
-    <table className='table table-hover'>
+const ThRenderer = ({
+    width,
+    field,
+    sort,
+    directionAsc,
+    sortField,
+    title,
+}) => (
+    <th
+        width={width}
+        className={`${sort === field ? 'text-primary' : ''}`}
+        onClick={() => sortField(field)}
+    >
+        <span className='mr-2' style={{cursor: 'pointer'}}>{title}</span>
+        {sort !== field ? null : <FontAwesomeIcon icon={directionAsc ? faArrowDown : faArrowUp}/>}
+    </th>
+)
+
+const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoice, copyInvoiceLink, copyInvoice}) => {
+    const [sort, setSort] = useState('invoice_date')
+    const [directionAsc, setDirection] = useState(false)
+    const toggleDirection = () => setDirection(!directionAsc)
+    const sortField = field => {
+        if (sort===field) return toggleDirection()
+        setSort(field)
+        setDirection(field==='direction' || field==='status')
+    }
+    const sortFunction = (a, b) => {
+        const dirMultiplier = directionAsc ? 1 : -1
+        switch (sort) {
+            case 'invoice_date':
+                return (
+                    (new Date(a.invoice_date).valueOf() -
+                        new Date(b.invoice_date).valueOf()) *
+                    dirMultiplier
+                )
+            case 'invoice_no':
+                return a.invoice_no === b.invoice_no
+                    ? 0
+                    : a.invoice_no > b.invoice_no
+                    ? dirMultiplier
+                    : -1 * dirMultiplier
+            case 'value': {
+                let aValue = processTotalEntries(a.entries)
+                let bValue = processTotalEntries(b.entries)
+                return (aValue - bValue) * dirMultiplier
+            }
+            case 'direction': {
+                let aValue = direction === 'from' ? a.to.name : a.from.name
+                let bValue = direction === 'from' ? b.to.name : b.from.name
+                return aValue === bValue
+                    ? 0
+                    : aValue > bValue
+                    ? dirMultiplier
+                    : -1 * dirMultiplier
+            }
+            case 'status': {
+                let aValue = Number.isFinite(Number(a.invoice_status)) ? Number(a.invoice_status) : 1
+                let bValue = Number.isFinite(Number(b.invoice_status)) ? Number(b.invoice_status) : 1
+                return (aValue - bValue) * dirMultiplier
+            }
+            default:
+                return 0
+        }
+    }
+    return <table className='table table-hover'>
         <thead>
             <tr>
-                <th width='12%'>Date</th>
-                <th width='15%'>No</th>
-                <th width='15%'>Value</th>
-                <th width='23%'>{direction === 'from' ? 'To' : 'From'}</th>
-                <th width='22%'>Status</th>
+                <ThRenderer width='12%' title='Date' field='invoice_date' {...{sort, sortField, directionAsc}}/>
+                <ThRenderer width='15%' title='No' field='invoice_no' {...{sort, sortField, directionAsc}}/>
+                <ThRenderer width='23%' title='Value' field='value' {...{sort, sortField, directionAsc}}/>
+                <ThRenderer width='23%' title={direction === 'from' ? 'To' : 'From'} field='direction' {...{sort, sortField, directionAsc}}/>
+                <ThRenderer width='22%' title='Status' field='status' {...{sort, sortField, directionAsc}}/>
                 <th width='13%' className='text-right'>
                     Actions
                 </th>
             </tr>
         </thead>
         <tbody>
-            {invoices.map((invoice) => {
+            {invoices.sort(sortFunction).map((invoice) => {
                 const {invoice_date, invoice_no, entries, invoice_status = '1', id} = invoice;
                 const destination = direction === 'from' ? invoice.to.name : invoice.from.name;
                 return (
@@ -201,13 +265,13 @@ const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoi
                         </td>
                         <td className='align-middle'>
                             <div className='d-flex flex-row justify-content-end'>
-                                <CopierButton {...{id, copyInvoiceLink}} />
-                                <button className='btn btn-primary ml-2' onClick={() => setViewSingleInvoice(id)}>
+                                <button className='btn btn-primary mr-2' onClick={() => setViewSingleInvoice(id)}>
                                     <FontAwesomeIcon icon={faEye} />
                                 </button>
-                                <button className='btn btn-primary ml-2' onClick={() => copyInvoice(id)}>
+                                <button className='btn btn-primary mr-2' onClick={() => copyInvoice(id)}>
                                     <FontAwesomeIcon icon={faCopy} />
                                 </button>
+                                <GetLinkButton {...{id, copyInvoiceLink}} />
                             </div>
                         </td>
                     </tr>
@@ -215,7 +279,7 @@ const InvoiceListTable = ({invoices, direction, updateStatus, setViewSingleInvoi
             })}
         </tbody>
     </table>
-);
+};
 
 const StatusCell = ({invoice_status, updateStatus, id, direction}) => {
     const [status, setStatus] = useState(invoice_status);

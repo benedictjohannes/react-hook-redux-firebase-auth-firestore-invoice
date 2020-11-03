@@ -72,7 +72,9 @@ const OrganizationDisplay = ({organizationId}) => {
                     reject(error);
                 },
                 () => {
-                    resolve(`http://${process.env.REACT_APP_IMAGE_FILES_DOMAIN}/${filename}`);
+                    resolve(
+                        `https://storage.googleapis.com/${process.env.REACT_APP_IMAGE_FILES_DOMAIN}/${filename}`
+                    )
                 }
             );
         });

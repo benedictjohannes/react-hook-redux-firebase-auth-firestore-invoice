@@ -8,6 +8,7 @@ import {Link, navigate} from '@reach/router';
 import ReactMarkdown from 'react-markdown';
 import ReactMde from 'react-mde';
 import 'react-mde/lib/styles/css/react-mde-all.css';
+import QRCode from 'qrcode.react'
 
 import {actions, useDispatch, useShallowSelector} from '../../../redux';
 
@@ -506,10 +507,27 @@ const V1 = ({
                             saveTotalAdjustments={saveTotalAdjustments}
                         />
                     </Col>
+                    {currentInvoiceData && currentInvoiceData.id && (
+                        <Col
+                            xs={12}
+                            className='mt-4 d-flex justify-content-end'
+                        >
+                            <div className='d-flex flex-column align-items-center'>
+                                <p className='small mb-0'>
+                                    &lt;Scan to View online&gt;
+                                </p>
+                                <QRCode
+                                    level='M'
+                                    size={192}
+                                    value={`https://${process.env.REACT_APP_DOMAIN}/view_single_invoice/${currentInvoiceData.id}`}
+                                />
+                            </div>
+                        </Col>
+                    )}
                 </Row>
             </Container>
         </div>
-    );
+    )
 };
 
 const SubtotalNameEditor = ({editable, value, setValue}) => {

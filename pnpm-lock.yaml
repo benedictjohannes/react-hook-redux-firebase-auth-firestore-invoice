@@ -11,6 +11,7 @@ dependencies:
   firebase: 7.14.2
   formik: 2.1.4_react@16.13.1
   node-sass: 4.14.0
+  qrcode.react: 1.0.0_react@16.13.1
   react: 16.13.1
   react-bootstrap: 1.0.1_react-dom@16.13.1+react@16.13.1
   react-date-picker: 8.0.1_react-dom@16.13.1+react@16.13.1
@@ -9969,6 +9970,21 @@ packages:
       teleport: '>=0.2.0'
     resolution:
       integrity: sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
+  /qr.js/0.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-ys6GOG9ZoNuAUPqQ2baw6IoeNk8=
+  /qrcode.react/1.0.0_react@16.13.1:
+    dependencies:
+      loose-envify: 1.4.0
+      prop-types: 15.7.2
+      qr.js: 0.0.0
+      react: 16.13.1
+    dev: false
+    peerDependencies:
+      react: ^15.5.3 || ^16.0.0
+    resolution:
+      integrity: sha512-jBXleohRTwvGBe1ngV+62QvEZ/9IZqQivdwzo9pJM4LQMoCM2VnvNBnKdjvGnKyDZ/l0nCDgsPod19RzlPvm/Q==
   /qs/6.5.2:
     dev: false
     engines:
@@ -12991,6 +13007,7 @@ specifiers:
   firebase: ^7.11.0
   formik: ^2.1.4
   node-sass: ^4.13.1
+  qrcode.react: ^1.0.0
   react: ^16.13.1
   react-bootstrap: ^1.0.0
   react-date-picker: ^8.0.1
